@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "co-wisdom-coaching": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://www.cw-coach.com/mcp"
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "co-wisdom-coaching": {
+      "type": "http",
+      "url": "https://www.cw-coach.com/mcp"
+    }
+  }
+}

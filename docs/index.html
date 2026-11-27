@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>群智企业教练 MCP Server – 让AI直接查询企业教练与ICF认证课程</title>
+  <meta name="description" content="群智企业教练（Co-wisdom Coaching）官方公开只读 MCP Server，支持通过 Streamable HTTP 查询高管教练、系统性团队教练、ICF 认证课程、公开活动及官网文章。">
+  <link rel="canonical" href="https://eason-h.github.io/co-wisdom-coaching-mcp/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="群智企业教练 MCP Server – 让AI直接查询企业教练与ICF认证课程">
+  <meta property="og:description" content="群智企业教练官方远程 MCP 服务（https://www.cw-coach.com/mcp），公开只读、无需鉴权，适配 Claude、Cursor、VS Code、Codex、Cherry Studio。">
+  <meta property="og:url" content="https://eason-h.github.io/co-wisdom-coaching-mcp/">
+  <meta property="og:locale" content="zh_CN">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["SoftwareApplication", "WebAPI"],
+        "name": "群智企业教练 MCP Server (Co-wisdom Coaching MCP)",
+        "alternateName": "co-wisdom-coaching",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform",
+        "softwareVersion": "0.1.0",
+        "description": "群智企业教练官方公开只读远程 Model Context Protocol (MCP) 服务，支持查询高管教练、系统性团队教练、ICF 认证课程、公开活动及官网专业文章。",
+        "url": "https://www.cw-coach.com/mcp",
+        "documentation": "https://eason-h.github.io/co-wisdom-coaching-mcp/",
+        "isAccessibleForFree": true,
+        "provider": {
+          "@id": "https://www.cw-coach.com/#organization"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.cw-coach.com/#organization",
+        "name": "群智企业教练 Co-wisdom Coaching",
+        "url": "https://www.cw-coach.com/",
+        "sameAs": [
+          "https://github.com/eason-h/co-wisdom-coaching-mcp"
+        ],
+        "description": "由 ICF MCC 大师级教练吴彦群（Karen）创立，ICF 官方授权认证课程机构，Peter Hawkins 系统性团队教练中国独家战略合作伙伴。"
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --surface: #ffffff;
+      --text: #1a2233;
+      --muted: #526075;
+      --accent: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --border: #e2e8f0;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      padding: 3.5rem 1.25rem 3rem;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    header h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.75rem, 3.5vw, 2.4rem);
+      line-height: 1.25;
+    }
+    header p {
+      margin: 0 0 1.5rem;
+      color: #dbeafe;
+      max-width: 720px;
+      font-size: 1.05rem;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.15rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: #ffffff;
+      color: #1e3a8a;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    main {
+      padding: 2rem 1.25rem 3.5rem;
+    }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.6rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      margin: 0 0 1rem;
+      font-size: 1.35rem;
+      border-bottom: 2px solid var(--accent-soft);
+      padding-bottom: 0.45rem;
+    }
+    h3 {
+      margin: 1.25rem 0 0.5rem;
+      font-size: 1.08rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      background: #f1f5f9;
+      padding: 0.12rem 0.38rem;
+      border-radius: 4px;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1rem 1.15rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      margin: 0.5rem 0 1rem;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      background: #fafcff;
+    }
+    .card h3 {
+      margin-top: 0;
+      font-size: 1.02rem;
+      color: #0f172a;
+    }
+    .card ul {
+      margin: 0.4rem 0 0;
+      padding-left: 1.15rem;
+    }
+    .card li {
+      margin-bottom: 0.35rem;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .stat {
+      background: var(--accent-soft);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+    .stat strong {
+      display: block;
+      font-size: 1.25rem;
+      color: #1e3a8a;
+    }
+    .stat span {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 1.5rem 1.25rem 2.5rem;
+    }
+    @media (max-width: 640px) {
+      section { padding: 1.2rem 1.1rem; }
+      th, td { padding: 0.5rem; font-size: 0.88rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>群智企业教练 MCP Server</h1>
+      <p>
+        <a href="https://www.cw-coach.com/" style="color:#ffffff;text-decoration:underline;">群智企业教练（Co-wisdom Coaching）</a>
+        官方公开只读远程 MCP 服务。支持 Claude、Cursor、VS Code、Codex、Cherry Studio 等 AI 客户端直接查询企业教练服务、ICF 认证课程、公开活动与官网专业文章。
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://www.cw-coach.com/">访问群智企业教练官网</a>
+        <a class="btn btn-secondary" href="https://github.com/eason-h/co-wisdom-coaching-mcp">GitHub 仓库</a>
+        <a class="btn btn-secondary" href="https://www.cw-coach.com/llms.txt">查看 llms.txt</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="endpoint">
+      <h2>接口信息</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Endpoint URL</th>
+            <td><code>https://www.cw-coach.com/mcp</code></td>
+          </tr>
+          <tr>
+            <th>传输协议（Transport）</th>
+            <td><code>streamable-http</code>（无状态 JSON 模式）</td>
+          </tr>
+          <tr>
+            <th>身份验证（Auth）</th>
+            <td>无需鉴权（公开只读）</td>
+          </tr>
+          <tr>
+            <th>服务名称（<code>serverInfo.name</code>）</th>
+            <td><code>co-wisdom-coaching</code>（版本 <code>0.1.0</code>）</td>
+          </tr>
+          <tr>
+            <th>支持协议版本</th>
+            <td><code>2025-11-25</code>、<code>2025-06-18</code>、<code>2025-03-26</code>、<code>2024-11-05</code></td>
+          </tr>
+          <tr>
+            <th>工具注解</th>
+            <td>全部工具均设置 <code>readOnlyHint: true</code>、<code>destructiveHint: false</code>、<code>idempotentHint: true</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="tools">
+      <h2>可用工具（Tools）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>工具名称</th>
+            <th>功能说明</th>
+            <th>参数说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>list_coaching_services</code></td>
+            <td>查询群智的企业教练、认证课程、公开活动与公益教练服务入口</td>
+            <td><code>service_id</code>（可选）：<code>executive_coaching</code>、<code>team_coaching</code>、<code>coaching_leadership</code>、<code>icf_training</code>、<code>public_events</code>、<code>welfare_coaching</code>；省略则返回全部服务</td>
+          </tr>
+          <tr>
+            <td><code>search_coaching_articles</code></td>
+            <td>实时搜索群智官网公开文章、课程信息或活动公告</td>
+            <td><code>keyword</code>（可选）、<code>collection</code>（<code>all</code> | <code>activity</code> | <code>course</code>，默认 <code>all</code>）、<code>limit</code>（<code>1</code>–<code>10</code>，默认 <code>5</code>）</td>
+          </tr>
+          <tr>
+            <td><code>get_coaching_article</code></td>
+            <td>按搜索结果返回的文章编号读取官网正文摘录与原文链接</td>
+            <td><code>article_id</code>（必填，来自搜索结果的数字 <code>entity_id</code>）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>示例提问（Prompts）</h3>
+      <ul>
+        <li>「帮我查群智有哪些 ICF 认证课程」</li>
+        <li>「群智最近有什么公开活动、体验课或沙龙」</li>
+        <li>「帮我了解群智的一对一高管教练和系统性团队教练服务」</li>
+        <li>「搜索群智官网关于 ICF 教练认证指南的文章并总结核心内容」</li>
+      </ul>
+    </section>
+
+    <section id="clients">
+      <h2>客户端接入配置</h2>
+
+      <h3>Claude Code</h3>
+      <pre><code>claude mcp add --transport http co-wisdom-coaching https://www.cw-coach.com/mcp</code></pre>
+
+      <h3>Claude Desktop</h3>
+      <p>在 <code>claude_desktop_config.json</code> 中通过 <code>mcp-remote</code> 接入：</p>
+      <pre><code>{
+  "mcpServers": {
+    "co-wisdom-coaching": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://www.cw-coach.com/mcp"]
+    }
+  }
+}</code></pre>
+
+      <h3>Cursor（<code>~/.cursor/mcp.json</code>）</h3>
+      <pre><code>{
+  "mcpServers": {
+    "co-wisdom-coaching": {
+      "url": "https://www.cw-coach.com/mcp"
+    }
+  }
+}</code></pre>
+
+      <h3>VS Code（<code>.vscode/mcp.json</code>）</h3>
+      <pre><code>{
+  "servers": {
+    "co-wisdom-coaching": {
+      "type": "http",
+      "url": "https://www.cw-coach.com/mcp"
+    }
+  }
+}</code></pre>
+
+      <h3>OpenAI Codex CLI（<code>~/.codex/config.toml</code>）</h3>
+      <pre><code>[mcp_servers.co-wisdom-coaching]
+url = "https://www.cw-coach.com/mcp"</code></pre>
+
+      <h3>Cherry Studio</h3>
+      <p>在 MCP 服务器设置中选择类型 <code>streamableHttp</code>，URL 填写 <code>https://www.cw-coach.com/mcp</code> 即可。</p>
+
+      <h3>curl 快速测试</h3>
+      <pre><code>curl -s -X POST https://www.cw-coach.com/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2025-06-18" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl-test","version":"1.0"}}}'
+
+curl -s -X POST https://www.cw-coach.com/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2025-06-18" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'</code></pre>
+    </section>
+
+    <section id="about">
+      <h2>关于群智企业教练</h2>
+      <p>
+        <a href="https://www.cw-coach.com/">群智企业教练（Co-wisdom Coaching）</a> 由 <strong>ICF MCC 大师级教练吴彦群（Karen）</strong> 创立，是 <strong>ICF（国际教练联合会）官方授权认证课程机构</strong>，同时也是 <strong>Peter Hawkins 系统性团队教练理论在中国的独家战略合作伙伴</strong>。
+      </p>
+      <div class="stats">
+        <div class="stat">
+          <strong>500+</strong>
+          <span>服务企业客户（含微软、雀巢、正泰等）</span>
+        </div>
+        <div class="stat">
+          <strong>1000+</strong>
+          <span>培养 PCC 水平教练</span>
+        </div>
+        <div class="stat">
+          <strong>50000+</strong>
+          <span>累计交付教练小时数</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="official-resources">
+      <h2>群智官网资源导航</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>企业教练服务</h3>
+          <ul>
+            <li><a href="https://www.cw-coach.com/one-on-one-executive-coaching/">一对一高管教练</a></li>
+            <li><a href="https://www.cw-coach.com/corporate-coaching-team-coaching/">系统性团队教练</a></li>
+            <li><a href="https://www.cw-coach.com/corporate-coaching-leadership-development/">教练型领导力发展</a></li>
+            <li><a href="https://www.cw-coach.com/coaching-for-organizations/">企业教练组织解决方案</a></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>ICF 认证教练课程</h3>
+          <ul>
+            <li><a href="https://www.cw-coach.com/category/course/">ICF教练认证课程总览</a></li>
+            <li><a href="https://www.cw-coach.com/cito-corporate-coaching/">CITO®企业教练认证课</a></li>
+            <li><a href="https://www.cw-coach.com/systemic-team-coaching/">系统性团队教练认证课</a></li>
+            <li><a href="https://www.cw-coach.com/psychodynamic-executive-coaching/">心理动力学高管教练认证课</a></li>
+            <li><a href="https://www.cw-coach.com/co-wisdom-coaching-icf-mcc-masterclass-2025/">MCC大师级教练认证课</a></li>
+            <li><a href="https://www.cw-coach.com/mentor-coaching-icf-certification-cce-program/">Mentor督导认证课</a></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>官网入口与教练知识</h3>
+          <ul>
+            <li><a href="https://www.cw-coach.com/">群智企业教练官网首页</a></li>
+            <li><a href="https://www.cw-coach.com/about/">关于群智与创始人团队</a></li>
+            <li><a href="https://www.cw-coach.com/activity-center/">体验课、沙龙和直播（活动中心）</a></li>
+            <li><a href="https://www.cw-coach.com/what-is-coach/">什么是教练（Coaching）</a></li>
+            <li><a href="https://www.cw-coach.com/icf-certification-explained/">ICF教练认证指南</a></li>
+            <li><a href="https://www.cw-coach.com/category/knowledge/">教练百科文章合集</a></li>
+            <li><a href="https://www.cw-coach.com/llms.txt">群智官网 llms.txt</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="english">
+      <h2>English Overview</h2>
+      <p>
+        <strong>Co-wisdom Coaching MCP</strong> is the official public read-only remote MCP server for
+        <a href="https://www.cw-coach.com/">Co-wisdom Coaching (群智企业教练)</a>. Connect any Streamable HTTP MCP client to
+        <code>https://www.cw-coach.com/mcp</code> with no authentication required to explore executive coaching, systemic team coaching, ICF-accredited training programs, public events, and coaching articles.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      © 2026 <a href="https://www.cw-coach.com/">群智企业教练 Co-wisdom Coaching</a> ·
+      <a href="https://github.com/eason-h/co-wisdom-coaching-mcp">GitHub Repository</a> ·
+      MIT License
+    </p>
+  </footer>
+</body>
+</html>

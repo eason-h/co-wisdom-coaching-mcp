@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  "name": "com.cw-coach/co-wisdom-coaching",
+  "version": "0.1.0",
+  "title": "群智企业教练（Co-wisdom Coaching）",
+  "description": "查询群智企业教练官网的企业教练服务、ICF认证课程、公开活动及文章资料。",
+  "websiteUrl": "https://eason-h.github.io/co-wisdom-coaching-mcp/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.cw-coach.com/mcp",
+      "supportedProtocolVersions": [
+        "2025-11-25",
+        "2025-06-18",
+        "2025-03-26",
+        "2024-11-05"
+      ]
+    }
+  ]
+}
